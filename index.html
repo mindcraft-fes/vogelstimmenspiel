@@ -16,24 +16,25 @@ text-align:center;
 background:#f0f0f0;
 }
 
+/* STARTSCREEN */
+
 #startScreen{
 height:100vh;
 display:flex;
 flex-direction:column;
 justify-content:center;
 align-items:center;
-gap:70px;
-
+gap:60px;
 background-image:url("Startseite.png");
 background-size:cover;
 background-position:center;
 }
 
 .startButton{
-font-size:60px;
-font-weight:700;
+font-size:55px;
+font-weight:bold;
 color:white;
-padding:40px 110px;
+padding:40px 120px;
 border-radius:30px;
 border:none;
 cursor:pointer;
@@ -44,31 +45,34 @@ box-shadow:0 12px 0 rgba(0,0,0,0.5),0 18px 35px rgba(0,0,0,0.4);
 .quizBtn{background:linear-gradient(#3498db,#1f618d);}
 .expertBtn{background:linear-gradient(#f39c12,#d35400);}
 
+/* GAME */
+
 #game{
 display:none;
 padding-top:20px;
 }
 
 .bigButton{
-font-size:34px;
-font-weight:700;
-padding:22px 45px;
-border-radius:18px;
+font-size:30px;
+padding:20px 40px;
+border-radius:15px;
 border:none;
 background:#444;
 color:white;
 cursor:pointer;
-margin:15px;
+margin:10px;
 }
 
 .container{
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:25px;
-width:92%;
+width:90%;
 margin:auto;
-margin-top:30px;
+margin-top:20px;
 }
+
+/* Karten */
 
 .card{
 background:white;
@@ -80,26 +84,29 @@ cursor:pointer;
 
 .card img{
 width:100%;
-height:200px;
+height:180px;
 object-fit:contain;
 }
 
 .name{
-font-size:26px;
-font-weight:700;
+font-size:24px;
+font-weight:bold;
 margin-top:10px;
 }
 
+/* Expertenbuttons */
+
 .expertButton{
-font-size:34px;
-font-weight:700;
-padding:40px;
+font-size:28px;
+padding:35px;
 border-radius:20px;
 border:none;
 background:#e67e22;
 color:white;
 cursor:pointer;
 }
+
+/* Feedback */
 
 .correct{
 background:#2ecc71 !important;
@@ -111,16 +118,18 @@ background:#e74c3c !important;
 color:white;
 }
 
+/* Fortschritt */
+
 #points{
-font-size:60px;
-font-weight:700;
+font-size:50px;
+font-weight:bold;
 }
 
 .progressContainer{
 width:90%;
-height:70px;
+height:60px;
 background:#ddd;
-border-radius:40px;
+border-radius:30px;
 margin:20px auto;
 overflow:hidden;
 }
@@ -131,10 +140,14 @@ width:0%;
 background:linear-gradient(90deg,#00c6ff,#0072ff);
 }
 
+/* Info */
+
 #info{
-font-size:38px;
-height:60px;
+font-size:34px;
+height:50px;
 }
+
+/* Richtiger Vogel Anzeige */
 
 #correctBirdBox{
 display:none;
@@ -142,9 +155,11 @@ margin-top:20px;
 }
 
 #correctBirdBox img{
-width:260px;
+width:240px;
 border-radius:20px;
 }
+
+/* Endscreen */
 
 #endScreen{
 display:none;
@@ -163,21 +178,13 @@ flex-direction:column;
 
 .resultBox{
 background:rgba(0,0,0,0.65);
-padding:50px;
-border-radius:25px;
+padding:40px;
+border-radius:20px;
 color:white;
 }
 
 #finalScore{
-font-size:90px;
-}
-
-.highscore{
-background:white;
-padding:40px;
-border-radius:20px;
-margin-top:30px;
-font-size:34px;
+font-size:80px;
 }
 
 </style>
@@ -225,18 +232,11 @@ font-size:34px;
 <div id="finalScore"></div>
 </div>
 
-<input id="nameInput" placeholder="Dein Name">
-
-<button id="saveBtn" class="bigButton" onclick="saveScore()">Score speichern</button>
-
-<div class="highscore">
-<h2>🏆 Klassen Highscore</h2>
-<div id="highscores"></div>
-</div>
-
 <button class="bigButton" onclick="location.reload()">Nochmal spielen</button>
 
 </div>
+
+<!-- AUDIO -->
 
 <audio id="nachtigall" src="nachtigall.mp3"></audio> <audio id="amsel" src="amsel.mp3"></audio> <audio id="rotkehlchen" src="rotkehlchen.mp3"></audio> <audio id="halsbandsittich" src="halsbandsittich.mp3"></audio> <audio id="kanadagans" src="kanadagans.mp3"></audio> <audio id="kohlmeise" src="kohlmeise.mp3"></audio> <audio id="ringeltaube" src="ringeltaube.mp3"></audio> <audio id="star" src="star.mp3"></audio> <audio id="stockente" src="stockente.mp3"></audio> <audio id="turmfalke" src="turmfalke.mp3"></audio>
 
@@ -266,11 +266,8 @@ mode=selectedMode;
 document.getElementById("startScreen").style.display="none";
 document.getElementById("game").style.display="block";
 
-if(mode==="learn"){
-document.getElementById("quizElements").style.display="none";
-}else{
-document.getElementById("quizElements").style.display="block";
-}
+document.getElementById("quizElements").style.display=
+(mode==="learn")?"none":"block";
 
 createCards();
 
@@ -287,6 +284,8 @@ document.getElementById("startScreen").style.display="flex";
 
 }
 
+/* Karten erstellen */
+
 function createCards(){
 
 let container=document.getElementById("birdContainer");
@@ -301,6 +300,7 @@ if(mode==="expert"){
 let btn=document.createElement("button");
 btn.className="expertButton";
 btn.innerText=name;
+
 btn.onclick=()=>birdClicked(b,btn);
 
 container.appendChild(btn);
@@ -322,12 +322,16 @@ container.appendChild(card);
 
 }
 
+/* Sound stoppen */
+
 function stopAllSounds(){
 document.querySelectorAll("audio").forEach(a=>{
 a.pause();
 a.currentTime=0;
 });
 }
+
+/* neue Runde */
 
 function nextRound(){
 
@@ -345,10 +349,14 @@ document.getElementById(currentBird).play();
 
 }
 
+/* Sound wiederholen */
+
 function repeatSound(){
 stopAllSounds();
 document.getElementById(currentBird).play();
 }
+
+/* Auswahl */
 
 function birdClicked(bird,element){
 
@@ -362,23 +370,24 @@ stopAllSounds();
 
 let all=document.querySelectorAll(".card,.expertButton");
 
-all.forEach(el=>{
-if(el.innerText.toLowerCase()===currentBird){
-el.classList.add("correct");
-}
-});
-
 if(bird===currentBird){
 
 element.classList.add("correct");
 points++;
+
 document.getElementById("info").innerHTML="✅ Richtig!";
 
 }else{
 
 element.classList.add("wrong");
 
-document.getElementById("info").innerHTML="❌ Falsch! Das war "+capitalize(currentBird);
+all.forEach(el=>{
+if(el.innerText.toLowerCase()===currentBird)
+el.classList.add("correct");
+});
+
+document.getElementById("info").innerHTML=
+"❌ Falsch! Das war "+capitalize(currentBird);
 
 if(mode==="quiz"){
 document.getElementById("correctBirdImage").src=currentBird+".jpg";
@@ -407,11 +416,15 @@ if(rounds>=maxRounds){
 endGame();
 }else{
 
-document.getElementById("info").innerHTML="⏳ Nächster Vogelruf startet gleich...";
+document.getElementById("info").innerHTML=
+"⏳ Nächster Vogelruf startet gleich...";
 
 setTimeout(()=>{
+
 document.getElementById("info").innerHTML="🔊 Höre den Vogelruf";
+
 nextRound();
+
 },2000);
 
 }
@@ -425,44 +438,8 @@ function endGame(){
 document.getElementById("game").style.display="none";
 document.getElementById("endScreen").style.display="flex";
 
-document.getElementById("finalScore").innerHTML="🏆 "+points+" / "+maxRounds;
-
-}
-
-function saveScore(){
-
-let name=document.getElementById("nameInput").value.trim();
-if(!name) return;
-
-let highscores=JSON.parse(localStorage.getItem("birdHighscores")||"[]");
-
-highscores.push({name:name,score:points});
-
-highscores.sort((a,b)=>b.score-a.score);
-
-highscores=highscores.slice(0,10);
-
-localStorage.setItem("birdHighscores",JSON.stringify(highscores));
-
-displayHighscores();
-
-}
-
-function displayHighscores(){
-
-let highscores=JSON.parse(localStorage.getItem("birdHighscores")||"[]");
-
-let html="";
-
-highscores.forEach((h,i)=>{
-
-let medal=i==0?"🥇":i==1?"🥈":i==2?"🥉":"";
-
-html+=medal+" "+h.name+" — "+h.score+" Punkte<br>";
-
-});
-
-document.getElementById("highscores").innerHTML=html;
+document.getElementById("finalScore").innerHTML=
+"🏆 "+points+" / "+maxRounds;
 
 }
 

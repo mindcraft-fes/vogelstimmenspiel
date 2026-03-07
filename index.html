@@ -16,7 +16,7 @@ text-align:center;
 background:#f0f0f0;
 }
 
-/* STARTSEITE */
+/* STARTSCREEN */
 
 #startScreen{
 height:100vh;
@@ -81,6 +81,7 @@ padding:20px;
 border-radius:20px;
 box-shadow:0 10px 25px rgba(0,0,0,0.25);
 cursor:pointer;
+transition:0.2s;
 }
 
 .card img{
@@ -105,8 +106,19 @@ color:white;
 cursor:pointer;
 }
 
-.correct{background:#2ecc71 !important;color:white;}
-.wrong{background:#e74c3c !important;color:white;}
+/* FEEDBACK */
+
+.correct{
+background:#2ecc71 !important;
+color:white;
+}
+
+.wrong{
+background:#e74c3c !important;
+color:white;
+}
+
+/* INFO */
 
 #points{
 font-size:50px;
@@ -145,35 +157,7 @@ width:220px;
 border-radius:20px;
 }
 
-/* ENDSCREEN */
-
-#endScreen{
-display:none;
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background-image:url("Startseite.png");
-background-size:cover;
-background-position:center;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-}
-
-.resultBox{
-background:rgba(0,0,0,0.65);
-padding:40px;
-border-radius:20px;
-color:white;
-}
-
-#finalScore{
-font-size:70px;
-}
-
-/* HIGHSCORE FENSTER */
+/* HIGHSCORE SCREEN */
 
 #highscoreScreen{
 display:none;
@@ -182,7 +166,7 @@ top:0;
 left:0;
 width:100%;
 height:100%;
-background:rgba(0,0,0,0.8);
+background:rgba(0,0,0,0.85);
 color:white;
 justify-content:center;
 align-items:center;
@@ -200,7 +184,7 @@ margin:20px;
 
 <body>
 
-<!-- STARTSEITE -->
+<!-- STARTSCREEN -->
 
 <div id="startScreen">
 
@@ -214,11 +198,11 @@ margin:20px;
 
 </div>
 
-<!-- HIGHSCORE SCREEN -->
+<!-- HIGHSCORE -->
 
 <div id="highscoreScreen">
 
-<h1>🏆 Klassen Highscore</h1>
+<h1>🏆 Highscore</h1>
 
 <div id="highscoreList"></div>
 
@@ -255,18 +239,6 @@ margin:20px;
 
 </div>
 
-<!-- ENDSCREEN -->
-
-<div id="endScreen">
-
-<div class="resultBox">
-<div id="finalScore"></div>
-</div>
-
-<button class="bigButton" onclick="location.reload()">Nochmal spielen</button>
-
-</div>
-
 <!-- AUDIO -->
 
 <audio id="nachtigall" src="nachtigall.mp3"></audio> <audio id="amsel" src="amsel.mp3"></audio> <audio id="rotkehlchen" src="rotkehlchen.mp3"></audio> <audio id="halsbandsittich" src="halsbandsittich.mp3"></audio> <audio id="kanadagans" src="kanadagans.mp3"></audio> <audio id="kohlmeise" src="kohlmeise.mp3"></audio> <audio id="ringeltaube" src="ringeltaube.mp3"></audio> <audio id="star" src="star.mp3"></audio> <audio id="stockente" src="stockente.mp3"></audio> <audio id="turmfalke" src="turmfalke.mp3"></audio>
@@ -290,7 +262,7 @@ function capitalize(t){
 return t.charAt(0).toUpperCase()+t.slice(1);
 }
 
-/* START SPIEL */
+/* START */
 
 function startGame(selectedMode){
 
@@ -384,7 +356,7 @@ document.getElementById(currentBird).play();
 
 }
 
-/* SOUND WIEDERHOLEN */
+/* WIEDERHOLEN */
 
 function repeatSound(){
 stopAllSounds();
@@ -403,6 +375,8 @@ return;
 
 stopAllSounds();
 
+let all=document.querySelectorAll(".card,.expertButton");
+
 if(bird===currentBird){
 
 element.classList.add("correct");
@@ -413,8 +387,12 @@ document.getElementById("info").innerHTML="✅ Richtig!";
 
 element.classList.add("wrong");
 
-document.getElementById("info").innerHTML=
-"❌ Falsch! Das war "+capitalize(currentBird);
+all.forEach(el=>{
+if(el.innerText.toLowerCase()===currentBird)
+el.classList.add("correct");
+});
+
+document.getElementById("info").innerHTML="❌ Falsch! Das war "+capitalize(currentBird);
 
 document.getElementById("correctBirdImage").src=currentBird+".jpg";
 document.getElementById("correctBirdName").innerHTML=capitalize(currentBird);
@@ -425,9 +403,17 @@ document.getElementById("correctBirdBox").style.display="block";
 rounds++;
 
 document.getElementById("points").innerHTML="Punkte: "+points+" / "+maxRounds;
+
 document.getElementById("progressBar").style.width=(rounds/maxRounds*100)+"%";
 
+/* Farben wieder entfernen */
+
 setTimeout(()=>{
+
+all.forEach(el=>{
+el.classList.remove("correct");
+el.classList.remove("wrong");
+});
 
 document.getElementById("correctBirdBox").style.display="none";
 
@@ -444,7 +430,7 @@ nextRound();
 
 }
 
-},2000);
+},1000);
 
 }
 
@@ -453,29 +439,11 @@ nextRound();
 function endGame(){
 
 document.getElementById("game").style.display="none";
-document.getElementById("endScreen").style.display="flex";
-
-document.getElementById("finalScore").innerHTML="🏆 "+points+" / "+maxRounds;
-
-saveScore();
+document.getElementById("startScreen").style.display="flex";
 
 }
 
 /* HIGHSCORE */
-
-function saveScore(){
-
-let highscores=JSON.parse(localStorage.getItem("birdHighscores")||"[]");
-
-highscores.push({score:points});
-
-highscores.sort((a,b)=>b.score-a.score);
-
-highscores=highscores.slice(0,10);
-
-localStorage.setItem("birdHighscores",JSON.stringify(highscores));
-
-}
 
 function showHighscores(){
 

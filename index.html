@@ -133,7 +133,7 @@ font-size:32px;
 height:50px;
 }
 
-/* richtiges Vogelbild */
+/* RICHTIGES VOGELBILD */
 
 #correctBirdBox{
 display:none;
@@ -178,7 +178,6 @@ height:100%;
 background-image:url("Startseite.png");
 background-size:cover;
 background-position:center;
-display:flex;
 justify-content:center;
 align-items:center;
 flex-direction:column;
@@ -297,10 +296,6 @@ font-size:28px;
 
 </div>
 
-<!-- AUDIO -->
-
-<audio id="nachtigall" src="nachtigall.mp3"></audio> <audio id="amsel" src="amsel.mp3"></audio> <audio id="rotkehlchen" src="rotkehlchen.mp3"></audio> <audio id="halsbandsittich" src="halsbandsittich.mp3"></audio> <audio id="kanadagans" src="kanadagans.mp3"></audio> <audio id="kohlmeise" src="kohlmeise.mp3"></audio> <audio id="ringeltaube" src="ringeltaube.mp3"></audio> <audio id="star" src="star.mp3"></audio> <audio id="stockente" src="stockente.mp3"></audio> <audio id="turmfalke" src="turmfalke.mp3"></audio>
-
 <script>
 
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbxpeHmvAqfvavf0ErpkFtBkHAqPFHnN7o4vEPw34IJYSKCNInvwwc4R0A8O2urvzt07rQ/exec";
@@ -322,25 +317,22 @@ function capitalize(t){
 return t.charAt(0).toUpperCase()+t.slice(1);
 }
 
-/* SPIEL START */
-
 function startGame(selectedMode){
 
 mode=selectedMode;
 
+points=0;
+rounds=0;
+usedBirds=[];
+
 document.getElementById("startScreen").style.display="none";
 document.getElementById("game").style.display="block";
-
-document.getElementById("quizElements").style.display=
-(mode==="learn")?"none":"block";
 
 createCards();
 
 if(mode!=="learn") nextRound();
 
 }
-
-/* ZURÜCK */
 
 function goBack(){
 
@@ -350,8 +342,6 @@ document.getElementById("game").style.display="none";
 document.getElementById("startScreen").style.display="flex";
 
 }
-
-/* KARTEN */
 
 function createCards(){
 
@@ -367,7 +357,6 @@ if(mode==="expert"){
 let btn=document.createElement("button");
 btn.className="expertButton";
 btn.innerText=name;
-
 btn.onclick=()=>birdClicked(b,btn);
 
 container.appendChild(btn);
@@ -378,7 +367,6 @@ let card=document.createElement("div");
 card.className="card";
 
 card.innerHTML="<img src='"+b+".jpg'><div class='name'>"+name+"</div>";
-
 card.onclick=()=>birdClicked(b,card);
 
 container.appendChild(card);
@@ -389,16 +377,12 @@ container.appendChild(card);
 
 }
 
-/* SOUND STOP */
-
 function stopAllSounds(){
 document.querySelectorAll("audio").forEach(a=>{
 a.pause();
 a.currentTime=0;
 });
 }
-
-/* RUNDE */
 
 function nextRound(){
 
@@ -416,14 +400,10 @@ document.getElementById(currentBird).play();
 
 }
 
-/* SOUND WIEDERHOLEN */
-
 function repeatSound(){
 stopAllSounds();
 document.getElementById(currentBird).play();
 }
-
-/* AUSWAHL */
 
 function birdClicked(bird,element){
 
@@ -436,22 +416,14 @@ return;
 stopAllSounds();
 
 if(bird===currentBird){
-
 element.classList.add("correct");
 points++;
-document.getElementById("info").innerHTML="✅ Richtig!";
-
 }else{
-
 element.classList.add("wrong");
-
-document.getElementById("info").innerHTML="❌ Falsch! Das war "+capitalize(currentBird);
 
 document.getElementById("correctBirdImage").src=currentBird+".jpg";
 document.getElementById("correctBirdName").innerHTML=capitalize(currentBird);
-
 document.getElementById("correctBirdBox").style.display="block";
-
 }
 
 rounds++;
@@ -479,8 +451,6 @@ nextRound();
 
 }
 
-/* ENDE */
-
 function endGame(){
 
 document.getElementById("game").style.display="none";
@@ -491,8 +461,6 @@ document.getElementById("finalScore").innerHTML="🏆 "+points+" / "+maxRounds;
 loadHighscoreEnd();
 
 }
-
-/* SCORE SPEICHERN */
 
 function saveScore(){
 
@@ -511,8 +479,6 @@ score:points
 setTimeout(loadHighscoreEnd,800);
 
 }
-
-/* HIGHSCORE LADEN */
 
 function loadHighscoreEnd(){
 
@@ -537,8 +503,6 @@ document.getElementById("highscoreEnd").innerHTML=html;
 });
 
 }
-
-/* START HIGHSCORE */
 
 function showHighscores(){
 

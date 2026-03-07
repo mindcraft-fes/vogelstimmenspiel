@@ -27,7 +27,6 @@ gap:70px;
 background-image:url("Startseite.png");
 background-size:cover;
 background-position:center;
-background-repeat:no-repeat;
 }
 
 .startButton{
@@ -38,34 +37,12 @@ padding:40px 110px;
 border-radius:30px;
 border:none;
 cursor:pointer;
-box-shadow:
-0 12px 0 rgba(0,0,0,0.5),
-0 18px 35px rgba(0,0,0,0.4);
-transition:all 0.15s;
+box-shadow:0 12px 0 rgba(0,0,0,0.5),0 18px 35px rgba(0,0,0,0.4);
 }
 
-.startButton:hover{
-transform:scale(1.05);
-}
-
-.startButton:active{
-transform:translateY(8px);
-box-shadow:
-0 4px 0 rgba(0,0,0,0.5),
-0 10px 20px rgba(0,0,0,0.3);
-}
-
-.learnBtn{
-background:linear-gradient(#2ecc71,#1e8449);
-}
-
-.quizBtn{
-background:linear-gradient(#3498db,#1f618d);
-}
-
-.expertBtn{
-background:linear-gradient(#f39c12,#d35400);
-}
+.learnBtn{background:linear-gradient(#2ecc71,#1e8449);}
+.quizBtn{background:linear-gradient(#3498db,#1f618d);}
+.expertBtn{background:linear-gradient(#f39c12,#d35400);}
 
 #game{
 display:none;
@@ -81,7 +58,6 @@ border:none;
 background:#444;
 color:white;
 cursor:pointer;
-box-shadow:0 8px 0 rgba(0,0,0,0.5),0 12px 22px rgba(0,0,0,0.3);
 margin:15px;
 }
 
@@ -100,7 +76,6 @@ padding:20px;
 border-radius:20px;
 box-shadow:0 10px 25px rgba(0,0,0,0.25);
 cursor:pointer;
-transition:0.2s;
 }
 
 .card img{
@@ -116,15 +91,14 @@ margin-top:10px;
 }
 
 .expertButton{
-font-size:32px;
+font-size:34px;
 font-weight:700;
-padding:35px;
-border-radius:18px;
+padding:40px;
+border-radius:20px;
 border:none;
 background:#e67e22;
 color:white;
 cursor:pointer;
-box-shadow:0 8px 0 rgba(0,0,0,0.5),0 12px 22px rgba(0,0,0,0.3);
 }
 
 .correct{
@@ -162,8 +136,6 @@ font-size:38px;
 height:60px;
 }
 
-/* Richtiges Vogelbild */
-
 #correctBirdBox{
 display:none;
 margin-top:20px;
@@ -172,7 +144,6 @@ margin-top:20px;
 #correctBirdBox img{
 width:260px;
 border-radius:20px;
-box-shadow:0 10px 20px rgba(0,0,0,0.4);
 }
 
 #endScreen{
@@ -195,38 +166,18 @@ background:rgba(0,0,0,0.65);
 padding:50px;
 border-radius:25px;
 color:white;
-max-width:700px;
-width:90%;
 }
 
 #finalScore{
 font-size:90px;
-font-weight:700;
-}
-
-#motivation{
-font-size:40px;
-margin-top:10px;
 }
 
 .highscore{
 background:white;
 padding:40px;
 border-radius:20px;
-box-shadow:0 10px 25px rgba(0,0,0,0.4);
-font-size:34px;
-width:600px;
-max-width:90%;
 margin-top:30px;
-}
-
-#nameInput{
-font-size:30px;
-padding:15px;
-width:300px;
-border-radius:10px;
-border:1px solid #ccc;
-margin:20px;
+font-size:34px;
 }
 
 </style>
@@ -272,7 +223,6 @@ margin:20px;
 
 <div class="resultBox">
 <div id="finalScore"></div>
-<div id="motivation"></div>
 </div>
 
 <input id="nameInput" placeholder="Dein Name">
@@ -328,6 +278,15 @@ if(mode!=="learn") nextRound();
 
 }
 
+function goBack(){
+
+stopAllSounds();
+
+document.getElementById("game").style.display="none";
+document.getElementById("startScreen").style.display="flex";
+
+}
+
 function createCards(){
 
 let container=document.getElementById("birdContainer");
@@ -337,6 +296,17 @@ birds.forEach(b=>{
 
 let name=capitalize(b);
 
+if(mode==="expert"){
+
+let btn=document.createElement("button");
+btn.className="expertButton";
+btn.innerText=name;
+btn.onclick=()=>birdClicked(b,btn);
+
+container.appendChild(btn);
+
+}else{
+
 let card=document.createElement("div");
 card.className="card";
 
@@ -345,6 +315,8 @@ card.innerHTML="<img src='"+b+".jpg'><div class='name'>"+name+"</div>";
 card.onclick=()=>birdClicked(b,card);
 
 container.appendChild(card);
+
+}
 
 });
 
@@ -388,26 +360,31 @@ return;
 
 stopAllSounds();
 
-let correctElement=[...document.querySelectorAll(".card")].find(c=>c.innerText.toLowerCase().includes(currentBird));
+let all=document.querySelectorAll(".card,.expertButton");
+
+all.forEach(el=>{
+if(el.innerText.toLowerCase()===currentBird){
+el.classList.add("correct");
+}
+});
 
 if(bird===currentBird){
 
 element.classList.add("correct");
 points++;
-
 document.getElementById("info").innerHTML="✅ Richtig!";
 
 }else{
 
 element.classList.add("wrong");
-correctElement.classList.add("correct");
 
 document.getElementById("info").innerHTML="❌ Falsch! Das war "+capitalize(currentBird);
 
+if(mode==="quiz"){
 document.getElementById("correctBirdImage").src=currentBird+".jpg";
 document.getElementById("correctBirdName").innerHTML=capitalize(currentBird);
-
 document.getElementById("correctBirdBox").style.display="block";
+}
 
 }
 
@@ -421,8 +398,10 @@ setTimeout(()=>{
 
 document.getElementById("correctBirdBox").style.display="none";
 
-element.classList.remove("wrong");
-if(correctElement) correctElement.classList.remove("correct");
+all.forEach(el=>{
+el.classList.remove("correct");
+el.classList.remove("wrong");
+});
 
 if(rounds>=maxRounds){
 endGame();
@@ -431,11 +410,8 @@ endGame();
 document.getElementById("info").innerHTML="⏳ Nächster Vogelruf startet gleich...";
 
 setTimeout(()=>{
-
 document.getElementById("info").innerHTML="🔊 Höre den Vogelruf";
-
 nextRound();
-
 },2000);
 
 }

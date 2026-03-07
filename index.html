@@ -81,7 +81,6 @@ padding:20px;
 border-radius:20px;
 box-shadow:0 10px 25px rgba(0,0,0,0.25);
 cursor:pointer;
-transition:0.2s;
 }
 
 .card img{
@@ -106,19 +105,8 @@ color:white;
 cursor:pointer;
 }
 
-/* FEEDBACK */
-
-.correct{
-background:#2ecc71 !important;
-color:white;
-}
-
-.wrong{
-background:#e74c3c !important;
-color:white;
-}
-
-/* INFO */
+.correct{background:#2ecc71 !important;color:white;}
+.wrong{background:#e74c3c !important;color:white;}
 
 #points{
 font-size:50px;
@@ -145,18 +133,6 @@ font-size:32px;
 height:50px;
 }
 
-/* RICHTIGER VOGEL */
-
-#correctBirdBox{
-display:none;
-margin-top:20px;
-}
-
-#correctBirdBox img{
-width:220px;
-border-radius:20px;
-}
-
 /* HIGHSCORE SCREEN */
 
 #highscoreScreen{
@@ -176,6 +152,14 @@ flex-direction:column;
 #highscoreList{
 font-size:32px;
 margin:20px;
+}
+
+#nameInput{
+font-size:28px;
+padding:10px;
+border-radius:10px;
+border:none;
+margin:15px;
 }
 
 </style>
@@ -202,7 +186,7 @@ margin:20px;
 
 <div id="highscoreScreen">
 
-<h1>🏆 Highscore</h1>
+<h1>🏆 Klassen Highscore</h1>
 
 <div id="highscoreList"></div>
 
@@ -228,14 +212,25 @@ margin:20px;
 
 <div id="info">🔊 Höre den Vogelruf</div>
 
-<div id="correctBirdBox">
-<img id="correctBirdImage">
-<div id="correctBirdName"></div>
-</div>
-
 </div>
 
 <div class="container" id="birdContainer"></div>
+
+</div>
+
+<!-- ENDSCREEN -->
+
+<div id="endScreen" style="display:none">
+
+<h1>Dein Ergebnis</h1>
+
+<div id="finalScore" style="font-size:70px"></div>
+
+<input id="nameInput" placeholder="Dein Name">
+
+<button class="bigButton" onclick="saveScore()">Score speichern</button>
+
+<button class="bigButton" onclick="location.reload()">Nochmal spielen</button>
 
 </div>
 
@@ -375,59 +370,31 @@ return;
 
 stopAllSounds();
 
-let all=document.querySelectorAll(".card,.expertButton");
-
 if(bird===currentBird){
-
 element.classList.add("correct");
 points++;
 document.getElementById("info").innerHTML="✅ Richtig!";
-
 }else{
-
 element.classList.add("wrong");
-
-all.forEach(el=>{
-if(el.innerText.toLowerCase()===currentBird)
-el.classList.add("correct");
-});
-
 document.getElementById("info").innerHTML="❌ Falsch! Das war "+capitalize(currentBird);
-
-document.getElementById("correctBirdImage").src=currentBird+".jpg";
-document.getElementById("correctBirdName").innerHTML=capitalize(currentBird);
-document.getElementById("correctBirdBox").style.display="block";
-
 }
 
 rounds++;
 
 document.getElementById("points").innerHTML="Punkte: "+points+" / "+maxRounds;
-
 document.getElementById("progressBar").style.width=(rounds/maxRounds*100)+"%";
-
-/* Farben wieder entfernen */
 
 setTimeout(()=>{
 
-all.forEach(el=>{
+document.querySelectorAll(".card,.expertButton").forEach(el=>{
 el.classList.remove("correct");
 el.classList.remove("wrong");
 });
 
-document.getElementById("correctBirdBox").style.display="none";
-
 if(rounds>=maxRounds){
 endGame();
 }else{
-
-document.getElementById("info").innerHTML="⏳ Nächster Vogelruf startet gleich...";
-
-setTimeout(()=>{
-document.getElementById("info").innerHTML="🔊 Höre den Vogelruf";
 nextRound();
-},2000);
-
 }
 
 },1000);
@@ -439,11 +406,34 @@ nextRound();
 function endGame(){
 
 document.getElementById("game").style.display="none";
-document.getElementById("startScreen").style.display="flex";
+document.getElementById("endScreen").style.display="block";
+
+document.getElementById("finalScore").innerHTML="🏆 "+points+" / "+maxRounds;
 
 }
 
-/* HIGHSCORE */
+/* SCORE SPEICHERN */
+
+function saveScore(){
+
+let name=document.getElementById("nameInput").value.trim();
+if(!name) return;
+
+let highscores=JSON.parse(localStorage.getItem("birdHighscores")||"[]");
+
+highscores.push({name:name,score:points});
+
+highscores.sort((a,b)=>b.score-a.score);
+
+highscores=highscores.slice(0,10);
+
+localStorage.setItem("birdHighscores",JSON.stringify(highscores));
+
+location.reload();
+
+}
+
+/* HIGHSCORE ANZEIGEN */
 
 function showHighscores(){
 
@@ -454,7 +444,11 @@ let highscores=JSON.parse(localStorage.getItem("birdHighscores")||"[]");
 let html="";
 
 highscores.forEach((h,i)=>{
-html+=(i+1)+". "+h.score+" Punkte<br>";
+
+let medal=i==0?"🥇":i==1?"🥈":i==2?"🥉":"";
+
+html+=medal+" "+h.name+" — "+h.score+" Punkte<br>";
+
 });
 
 document.getElementById("highscoreList").innerHTML=html;

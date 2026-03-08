@@ -44,6 +44,7 @@ box-shadow:0 10px 0 rgba(0,0,0,0.5),0 18px 30px rgba(0,0,0,0.4);
 .learnBtn{background:linear-gradient(#2ecc71,#1e8449);}
 .quizBtn{background:linear-gradient(#3498db,#1f618d);}
 .expertBtn{background:linear-gradient(#f39c12,#d35400);}
+.timerBtn{background:linear-gradient(#e74c3c,#922b21);}
 .scoreBtn{background:linear-gradient(#9b59b6,#6c3483);}
 
 /* SPIEL */
@@ -142,6 +143,22 @@ width:250px;
 border-radius:20px;
 }
 
+/* TIMER */
+
+#timerBox{
+display:none;
+font-size:60px;
+font-weight:bold;
+margin:10px auto;
+width:120px;
+height:120px;
+line-height:120px;
+border-radius:50%;
+background:linear-gradient(#e74c3c,#922b21);
+color:white;
+box-shadow:0 6px 0 rgba(0,0,0,0.3);
+}
+
 /* HIGHSCORE SCREEN */
 
 #highscoreScreen{
@@ -222,6 +239,8 @@ font-size:28px;
 
 <button class="startButton expertBtn" onclick="startGame('expert')">Expertenmodus</button>
 
+<button class="startButton timerBtn" onclick="startGame('timer')">⏱ Zeitmodus</button>
+
 <button class="startButton scoreBtn" onclick="showHighscores()">🏆 Highscore</button>
 
 </div>
@@ -245,6 +264,8 @@ font-size:28px;
 <div class="progressContainer">
 <div class="progressBar" id="progressBar"></div>
 </div>
+
+<div id="timerBox">8</div>
 
 <button class="bigButton" onclick="repeatSound()">🔁 Vogelruf wiederholen</button>
 
@@ -295,6 +316,8 @@ let rounds=0;
 let maxRounds=15;
 let mode="quiz";
 let scoreSaved=false;
+let timerInterval=null;
+let timerValue=8;
 
 function capitalize(t){
 return t.charAt(0).toUpperCase()+t.slice(1);
@@ -310,6 +333,12 @@ scoreSaved=false;
 document.getElementById("startScreen").style.display="none";
 document.getElementById("game").style.display="block";
 
+if(mode==="timer"){
+document.getElementById("timerBox").style.display="block";
+}else{
+document.getElementById("timerBox").style.display="none";
+}
+
 createCards();
 
 if(mode!=="learn") nextRound();
@@ -319,6 +348,7 @@ if(mode!=="learn") nextRound();
 function goBack(){
 
 stopAllSounds();
+clearTimer();
 
 document.getElementById("game").style.display="none";
 document.getElementById("startScreen").style.display="flex";
@@ -365,15 +395,72 @@ a.currentTime=0;
 });
 }
 
+function clearTimer(){
+if(timerInterval){
+clearInterval(timerInterval);
+timerInterval=null;
+}
+}
+
+function startTimer(){
+timerValue=8;
+document.getElementById("timerBox").innerText=timerValue;
+document.getElementById("timerBox").style.background="linear-gradient(#e74c3c,#922b21)";
+
+clearTimer();
+
+timerInterval=setInterval(()=>{
+timerValue--;
+document.getElementById("timerBox").innerText=timerValue;
+
+if(timerValue<=3){
+document.getElementById("timerBox").style.background="linear-gradient(#c0392b,#7b241c)";
+}
+
+if(timerValue<=0){
+clearTimer();
+timeOut();
+}
+},1000);
+}
+
+function timeOut(){
+stopAllSounds();
+
+document.querySelectorAll(".card,.expertButton").forEach(el=>{
+el.style.pointerEvents="none";
+});
+
+document.getElementById("correctBirdImage").src=currentBird+".jpg";
+document.getElementById("correctBirdName").innerHTML="⏱ Zeit! → "+capitalize(currentBird);
+document.getElementById("correctBirdBox").style.display="block";
+
+rounds++;
+document.getElementById("points").innerHTML="Punkte: "+points+" / "+maxRounds;
+document.getElementById("progressBar").style.width=(rounds/maxRounds*100)+"%";
+
+setTimeout(()=>{
+document.querySelectorAll(".card,.expertButton").forEach(el=>{
+el.classList.remove("correct","wrong");
+el.style.pointerEvents="";
+});
+document.getElementById("correctBirdBox").style.display="none";
+if(rounds>=maxRounds){endGame();}else{nextRound();}
+},1800);
+}
+
 function nextRound(){
 
 stopAllSounds();
+clearTimer();
 
 let randomIndex=Math.floor(Math.random()*birds.length);
 
 currentBird=birds[randomIndex];
 
 document.getElementById(currentBird).play();
+
+if(mode==="timer") startTimer();
 
 }
 
@@ -391,6 +478,7 @@ return;
 }
 
 stopAllSounds();
+clearTimer();
 
 if(bird===currentBird){
 element.classList.add("correct");
@@ -430,6 +518,8 @@ nextRound();
 }
 
 function endGame(){
+
+clearTimer();
 
 document.getElementById("game").style.display="none";
 document.getElementById("endScreen").style.display="flex";

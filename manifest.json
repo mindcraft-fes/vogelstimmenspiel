@@ -1,0 +1,25 @@
+{
+  "name": "Vogelstimmen Trainer",
+  "short_name": "Vogelstimmen",
+  "description": "Lerne Vogelstimmen kennen und teste dein Wissen",
+  "start_url": "/vogelstimmenspiel/",
+  "scope": "/vogelstimmenspiel/",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "Logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "Logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

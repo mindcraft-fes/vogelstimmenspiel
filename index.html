@@ -3,9 +3,6 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<link rel="apple-touch-icon" href="Logo.png">
-<link rel="icon" type="image/png" href="Logo.png">
-<link rel="manifest" href="manifest.json">
 <title>Vogelstimmen Trainer</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
@@ -133,8 +130,6 @@ width:0%;
 background:linear-gradient(90deg,#00c6ff,#0072ff);
 }
 
-/* RICHTIGER VOGEL */
-
 #correctBirdBox{
 display:none;
 margin-top:20px;
@@ -145,7 +140,7 @@ width:250px;
 border-radius:20px;
 }
 
-/* HIGHSCORE SCREEN */
+/* HIGHSCORE */
 
 #highscoreScreen{
 display:none;
@@ -220,11 +215,8 @@ font-size:28px;
 <div id="startScreen">
 
 <button class="startButton learnBtn" onclick="startGame('learn')">Lernen</button>
-
 <button class="startButton quizBtn" onclick="startGame('quiz')">Quiz</button>
-
 <button class="startButton expertBtn" onclick="startGame('expert')">Expertenmodus</button>
-
 <button class="startButton scoreBtn" onclick="showHighscores()">🏆 Highscore</button>
 
 </div>
@@ -280,19 +272,13 @@ font-size:28px;
 
 </div>
 
-<audio id="nachtigall" src="nachtigall.mp3"></audio> <audio id="amsel" src="amsel.mp3"></audio> <audio id="rotkehlchen" src="rotkehlchen.mp3"></audio> <audio id="halsbandsittich" src="halsbandsittich.mp3"></audio> <audio id="kanadagans" src="kanadagans.mp3"></audio> <audio id="kohlmeise" src="kohlmeise.mp3"></audio> <audio id="ringeltaube" src="ringeltaube.mp3"></audio> <audio id="star" src="star.mp3"></audio> <audio id="stockente" src="stockente.mp3"></audio> <audio id="turmfalke" src="turmfalke.mp3"></audio>
-
 <script>
 
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbxpeHmvAqfvavf0ErpkFtBkHAqPFHnN7o4vEPw34IJYSKCNInvwwc4R0A8O2urvzt07rQ/exec";
 
-let birds=[
-"nachtigall","amsel","rotkehlchen","halsbandsittich",
-"kanadagans","kohlmeise","ringeltaube","star",
-"stockente","turmfalke"
-];
-
+let birds=[];
 let currentBird="";
+let lastBird="";
 let points=0;
 let rounds=0;
 let maxRounds=15;
@@ -301,6 +287,32 @@ let scoreSaved=false;
 
 function capitalize(t){
 return t.charAt(0).toUpperCase()+t.slice(1);
+}
+
+/* VÖGEL LADEN */
+
+fetch("birds.json")
+.then(res=>res.json())
+.then(data=>{
+birds=data;
+loadBirdSounds();
+createCards();
+});
+
+/* AUDIO ERZEUGEN */
+
+function loadBirdSounds(){
+
+birds.forEach(b=>{
+
+let audio=document.createElement("audio");
+audio.id=b;
+audio.src=b+".mp3";
+
+document.body.appendChild(audio);
+
+});
+
 }
 
 function startGame(selectedMode){
@@ -372,9 +384,16 @@ function nextRound(){
 
 stopAllSounds();
 
-let randomIndex=Math.floor(Math.random()*birds.length);
+let newBird;
 
-currentBird=birds[randomIndex];
+do{
+let randomIndex=Math.floor(Math.random()*birds.length);
+newBird=birds[randomIndex];
+}
+while(newBird===lastBird && birds.length>1);
+
+currentBird=newBird;
+lastBird=newBird;
 
 document.getElementById(currentBird).play();
 
@@ -520,9 +539,6 @@ function closeHighscores(){
 document.getElementById("highscoreScreen").style.display="none";
 }
 
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("sw.js");
-}
 </script>
 
 </body>

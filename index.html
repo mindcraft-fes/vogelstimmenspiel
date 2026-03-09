@@ -3,7 +3,22 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vogelstimmen Trainer</title>
+<meta property="og:title" content="Vogelstimmen Trainer">
+<meta property="og:description" content="Erkenne Vögel an ihrer Stimme – Quiz, Lernen & Expertenmodus">
+<meta property="og:image" content="https://mindcraft-fes.github.io/vogelstimmenspiel/Logo.png">
+<meta property="og:url" content="https://mindcraft-fes.github.io/vogelstimmenspiel/">
+<meta property="og:type" content="website">
+
+<!-- App Icon -->
+<link rel="icon" type="image/png" href="Logo.png">
+<link rel="apple-touch-icon" href="Logo.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Vogelstimmen">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a1a2e">
+<link rel="manifest" href="manifest.json">
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 
@@ -66,9 +81,9 @@ margin:10px;
 
 .container{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-gap:20px;
-width:95%;
+grid-template-columns:1fr 1fr;
+gap:25px;
+width:90%;
 margin:auto;
 margin-top:20px;
 }
@@ -130,6 +145,8 @@ width:0%;
 background:linear-gradient(90deg,#00c6ff,#0072ff);
 }
 
+/* RICHTIGER VOGEL */
+
 #correctBirdBox{
 display:none;
 margin-top:20px;
@@ -140,7 +157,7 @@ width:250px;
 border-radius:20px;
 }
 
-/* HIGHSCORE */
+/* HIGHSCORE SCREEN */
 
 #highscoreScreen{
 display:none;
@@ -215,8 +232,11 @@ font-size:28px;
 <div id="startScreen">
 
 <button class="startButton learnBtn" onclick="startGame('learn')">Lernen</button>
+
 <button class="startButton quizBtn" onclick="startGame('quiz')">Quiz</button>
+
 <button class="startButton expertBtn" onclick="startGame('expert')">Expertenmodus</button>
+
 <button class="startButton scoreBtn" onclick="showHighscores()">🏆 Highscore</button>
 
 </div>
@@ -272,13 +292,19 @@ font-size:28px;
 
 </div>
 
+<audio id="nachtigall" src="nachtigall.mp3"></audio> <audio id="amsel" src="amsel.mp3"></audio> <audio id="rotkehlchen" src="rotkehlchen.mp3"></audio> <audio id="halsbandsittich" src="halsbandsittich.mp3"></audio> <audio id="kanadagans" src="kanadagans.mp3"></audio> <audio id="kohlmeise" src="kohlmeise.mp3"></audio> <audio id="ringeltaube" src="ringeltaube.mp3"></audio> <audio id="star" src="star.mp3"></audio> <audio id="stockente" src="stockente.mp3"></audio> <audio id="turmfalke" src="turmfalke.mp3"></audio>
+
 <script>
 
 const SCRIPT_URL="https://script.google.com/macros/s/AKfycbxpeHmvAqfvavf0ErpkFtBkHAqPFHnN7o4vEPw34IJYSKCNInvwwc4R0A8O2urvzt07rQ/exec";
 
-let birds=[];
+let birds=[
+"nachtigall","amsel","rotkehlchen","halsbandsittich",
+"kanadagans","kohlmeise","ringeltaube","star",
+"stockente","turmfalke"
+];
+
 let currentBird="";
-let lastBird="";
 let points=0;
 let rounds=0;
 let maxRounds=15;
@@ -287,32 +313,6 @@ let scoreSaved=false;
 
 function capitalize(t){
 return t.charAt(0).toUpperCase()+t.slice(1);
-}
-
-/* VÖGEL LADEN */
-
-fetch("birds.json")
-.then(res=>res.json())
-.then(data=>{
-birds=data;
-loadBirdSounds();
-createCards();
-});
-
-/* AUDIO ERZEUGEN */
-
-function loadBirdSounds(){
-
-birds.forEach(b=>{
-
-let audio=document.createElement("audio");
-audio.id=b;
-audio.src=b+".mp3";
-
-document.body.appendChild(audio);
-
-});
-
 }
 
 function startGame(selectedMode){
@@ -384,16 +384,9 @@ function nextRound(){
 
 stopAllSounds();
 
-let newBird;
-
-do{
 let randomIndex=Math.floor(Math.random()*birds.length);
-newBird=birds[randomIndex];
-}
-while(newBird===lastBird && birds.length>1);
 
-currentBird=newBird;
-lastBird=newBird;
+currentBird=birds[randomIndex];
 
 document.getElementById(currentBird).play();
 
@@ -447,7 +440,7 @@ endGame();
 nextRound();
 }
 
-},4000);
+},1500);
 
 }
 
